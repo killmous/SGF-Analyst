@@ -1,0 +1,141 @@
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="">
+        <meta name="author" content="">
+        <link rel="shortcut icon" href="[%- c.uri_for('/go.ico') -%]">
+
+        <title>SGF Analyst</title>
+
+        <!-- Bootstrap holla -->
+        <link href="[%- c.uri_for('/static/css/bootstrap.min.css') -%]" rel="stylesheet"></link>
+
+        <!-- Analysis page CSS -->
+        <link href="[%- c.uri_for('/static/css/analysis.css') -%]" rel="stylesheet">
+
+        <style type="text/css"></style><style id="holderjs-style" type="text/css"></style>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+        <script>
+$(function () {
+    $('#graph').highcharts({
+        chart: {
+            type: "spline"
+        },
+        title: {
+            text: 'Winner: [%- winner -%]',
+            x: -20 //center
+        },
+        yAxis: {
+            title: {
+                text: 'Game Score'
+            },
+            plotLines: [{
+                value: 0,
+                width: 1,
+                color: '#808080'
+            }],
+            plotBands: [{
+                from: 0,
+                to: 100,
+                color: 'rgba(0,0,0,1)'
+            }]
+        },
+        tooltip: {
+            headerFormat: '',
+            valueSuffix: ' points'
+        },
+        plotOptions: {
+            line: {
+                enableMouseTracking: false
+            },
+            marker: {
+                enabled: false
+            }
+        },
+        series: [{
+            name: 'Score',
+            data: [
+                [%- FOREACH move = data %]
+                    [%- move.color == "Black" ? move.score : move.color == "White" ? move.score * -1 : 0 -%],
+                [%- END %]
+            ]
+        }]
+    });
+});
+        </script>
+    </head>
+
+    <body style>
+        <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="[%- c.uri_for('/') -%]">SGF Analyst</a>
+                </div>
+                <div class="collapse navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        <li><a href="[%- c.uri_for('/') -%]">Home</a></li>
+                        <li><a href="#about">About</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                    </ul>
+                </div><!--/.nav-collapse -->
+            </div>
+        </div>
+
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-3 col-md-2 sidebar">
+                    <ul class="nav nav-sidebar">
+                        <li><a href="#overview">Overview</a></li>
+                        <li><a href="#details">Details</a></li>
+                        <li><a href="#">Analytics</a></li>
+                        <li><a href="#">Export</a></li>
+                    </ul>
+                </div>
+                <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+                    <div id="overview">
+                        <h1 class="page-header">
+                            [%- players.black ? players.black : "Black" -%] [%- IF rankings.black -%] ([%- rankings.black -%])[%- END -%]
+                             vs 
+                            [%- players.white ? players.white : "White" -%] [%- IF rankings.white -%] ([%- rankings.white -%])[%- END -%]
+                        </h1>
+                        <div id="graph" style="min-width: 310px; height: 400px; margin: 0 auto">
+                            <div class="alert alert-danger">
+                                <p>If the graph isn't showing, check your internet connection!</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="details">
+                        <h1 class="page-header">Match Details</h1>
+                        <ul class="list-group">
+[%- IF players.black AND players.white -%]
+                            <li class="list-group-item">Players: [%- players.black -%] vs [%- players.white -%]</li>    [%- END -%]
+[%- IF rankings.black AND rankings.white -%]
+                            <li class="list-group-item">Rankings: [%- rankings.black -%] vs [%- rankings.white -%]</li> [%- END -%]
+[%- IF komi -%]             <li class="list-group-item">Komi: [%- komi -%]</li>                                         [%- END -%]
+[%- IF handicap -%]         <li class="list-group-item">Handicap Awarded: [%- handicap -%]</li>                         [%- END -%]
+[%- IF date -%]             <li class="list-group-item">Date Played: [%- date -%]</li>                                  [%- END -%]
+[%- IF event -%]            <li class="list-group-item">Event: [%- event -%]</li>                                       [%- END -%]
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bootstrap core JavaScript
+        ================================================== -->
+        <!-- Placed at the end of the document so the pages load faster -->
+        <script src="[%- c.uri_for('/static/js/bootstrap.min.js') -%]"></script>
+
+        <script src="[%- c.uri_for('/static/js/highcharts/highcharts.js') -%]"></script>
+        <script src="[%- c.uri_for('/static/js/highcharts/modules/exporting.js') -%]"></script>
+
+    </body>
+</html>
