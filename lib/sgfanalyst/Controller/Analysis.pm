@@ -37,6 +37,7 @@ sub analysis :Chained('base') :PathPart('') :Args(1) {
         $c->response->body("$id not found");
     } else {
         $c->stash(data => decode_json $dbdata->{_column_data}->{data});
+        $c->stash(sgf => $dbdata->{_column_data}->{sgf});
         $c->stash(title => $dbdata->{_column_data}->{title});
         $c->stash(players => {
                 black => $dbdata->{_column_data}->{players_black},
@@ -46,6 +47,7 @@ sub analysis :Chained('base') :PathPart('') :Args(1) {
                 black => $dbdata->{_column_data}->{rankings_black},
                 white => $dbdata->{_column_data}->{rankings_white}
             });
+        $c->stash(size => $dbdata->{_column_data}->{size});
         $c->stash(komi => $dbdata->{_column_data}->{komi});
         $c->stash(handicap => $dbdata->{_column_data}->{handicap});
         $c->stash(date => $dbdata->{_column_data}->{date});

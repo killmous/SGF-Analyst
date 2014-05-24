@@ -17,6 +17,7 @@
 
         <style type="text/css"></style><style id="holderjs-style" type="text/css"></style>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+        <script src="[%- c.uri_for('/static/js/goban.js') -%]"></script>
         <script>
 $(function () {
     $('#graph').highcharts({
@@ -42,6 +43,11 @@ $(function () {
                 color: 'rgba(0,0,0,1)'
             }]
         },
+        xAxis: {
+            title: {
+                text: 'Move'
+            }
+        },
         tooltip: {
             headerFormat: '',
             valueSuffix: ' points'
@@ -63,6 +69,19 @@ $(function () {
             ]
         }]
     });
+});
+        </script>
+        <script>
+$(function () {
+    var c = document.getElementById('goban');
+    c.width = $('#goban-container').width();
+    c.height = $('#goban-container').width();
+    var goban = new Goban(c, [%- IF size; size; ELSE; 19; END; -%]);
+    goban.getMoves('[%- sgf -%]');
+    goban.draw();
+
+    document.getElementById('next-btn').onclick = function() {goban.nextMove();};
+    document.getElementById('prev-btn').onclick = function() {goban.prevMove();};
 });
         </script>
     </head>
@@ -93,9 +112,9 @@ $(function () {
             <div class="row">
                 <div class="col-sm-3 col-md-2 sidebar">
                     <ul class="nav nav-sidebar">
-                        <li><a href="#overview">Overview</a></li>
+                        <li><a href="#">Overview</a></li>
                         <li><a href="#details">Details</a></li>
-                        <li><a href="#">Analytics</a></li>
+                        <li><a href="#gameplay">Gameplay</a></li>
                         <li><a href="#">Export</a></li>
                     </ul>
                 </div>
@@ -106,7 +125,7 @@ $(function () {
                              vs 
                             [%- players.white ? players.white : "White" -%] [%- IF rankings.white -%] ([%- rankings.white -%])[%- END -%]
                         </h1>
-                        <div id="graph" style="min-width: 310px; height: 400px; margin: 0 auto">
+                        <div id="graph" style="min-width: 310px; height: 400px; margin: 0 auto;">
                             <div class="alert alert-danger">
                                 <p>If the graph isn't showing, check your internet connection!</p>
                             </div>
@@ -119,11 +138,25 @@ $(function () {
                             <li class="list-group-item">Players: [%- players.black -%] vs [%- players.white -%]</li>    [%- END -%]
 [%- IF rankings.black AND rankings.white -%]
                             <li class="list-group-item">Rankings: [%- rankings.black -%] vs [%- rankings.white -%]</li> [%- END -%]
+[%- IF size -%]             <li class="list-group-item">Board Size: [%- size -%]</li>                                   [%- END -%]
 [%- IF komi -%]             <li class="list-group-item">Komi: [%- komi -%]</li>                                         [%- END -%]
 [%- IF handicap -%]         <li class="list-group-item">Handicap Awarded: [%- handicap -%]</li>                         [%- END -%]
 [%- IF date -%]             <li class="list-group-item">Date Played: [%- date -%]</li>                                  [%- END -%]
 [%- IF event -%]            <li class="list-group-item">Event: [%- event -%]</li>                                       [%- END -%]
                         </ul>
+                    </div>
+                    <div class="row well" id="gameplay">
+                        <div class="col-md-6" id="goban-container">
+                            <canvas id="goban" style="border: 1px; solid: #000000;"></canvas>
+                        </div>
+                        <div class="col-md-2">
+                            <button class="btn btn-default btn-lg" id="prev-btn">
+                                <span class="glyphicon glyphicon-chevron-left"></span>
+                            </button>
+                            <button class="btn btn-default btn-lg" id="next-btn">
+                                <span class="glyphicon glyphicon-chevron-right"></span>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>

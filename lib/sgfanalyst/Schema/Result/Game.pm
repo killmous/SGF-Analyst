@@ -49,6 +49,11 @@ __PACKAGE__->table("games");
   data_type: 'text'
   is_nullable: 1
 
+=head2 sgf
+
+  data_type: 'text'
+  is_nullable: 1
+
 =head2 title
 
   data_type: 'text'
@@ -72,6 +77,11 @@ __PACKAGE__->table("games");
 =head2 rankings_white
 
   data_type: 'text'
+  is_nullable: 1
+
+=head2 size
+
+  data_type: 'integer'
   is_nullable: 1
 
 =head2 komi
@@ -106,6 +116,8 @@ __PACKAGE__->add_columns(
   { data_type => "integer", is_auto_increment => 1, is_nullable => 0 },
   "data",
   { data_type => "text", is_nullable => 1 },
+  "sgf",
+  { data_type => "text", is_nullable => 1 },
   "title",
   { data_type => "text", is_nullable => 1 },
   "players_black",
@@ -116,6 +128,8 @@ __PACKAGE__->add_columns(
   { data_type => "text", is_nullable => 1 },
   "rankings_white",
   { data_type => "text", is_nullable => 1 },
+  "size",
+  { data_type => "integer", is_nullable => 1 },
   "komi",
   { data_type => "real", is_nullable => 1 },
   "handicap",
@@ -141,8 +155,8 @@ __PACKAGE__->add_columns(
 __PACKAGE__->set_primary_key("id");
 
 
-# Created by DBIx::Class::Schema::Loader v0.07039 @ 2014-05-22 11:50:36
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:WNl3HjLZbMZreU+UIgdVsw
+# Created by DBIx::Class::Schema::Loader v0.07039 @ 2014-05-23 17:36:55
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:IyNPxQtnoRPSeUQK+q/QQw
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

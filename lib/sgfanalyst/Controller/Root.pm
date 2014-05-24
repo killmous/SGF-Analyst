@@ -3,6 +3,7 @@ use Moose;
 use namespace::autoclean;
 use Games::Go::SGF;
 use JSON;
+use Data::Dumper;
 
 BEGIN { extends 'Catalyst::Controller' }
 
@@ -61,17 +62,20 @@ sub build :Chained('/') :PathPart('build') {
         } else {
             $c->model('DB::Game')->create({
                         data => encode_json evaluate('/tmp/sgfanalyst'),
+                        sgf => $file,
                         title => 'Go Analysis',
                         players_black => $sgf->black,
                         players_white => $sgf->white,
                         rankings_black => $sgf->BR,
                         rankings_white => $sgf->WR,
+                        size => $sgf->SZ,
                         komi => $sgf->KM,
                         handicap => $sgf->HA,
                         date => $sgf->date,
                         event => $sgf->EV,
                         winner => $sgf->RE =~ /W/ ? 'White' : $sgf->RE =~ /B/ ? 'Black' : 'Jigo'});
-            $c->response->body("Success!");
+            my $id = $c->model('DB::Game')->get_column('id')->max;
+            $c->response->redirect($c->uri_for("/pages/$id"));
         }
     } else {
         $c->stash(template => 'index.tt');
