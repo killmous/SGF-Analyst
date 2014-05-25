@@ -1,1 +1,8 @@
+inc/
+blib/
+Makefile
+META.yml
+MYMETA.yml
+MYMETA.json
+Makefile
 sgfanalyst.db
