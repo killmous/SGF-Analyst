@@ -20,6 +20,22 @@
         <script src="[%- c.uri_for('/static/js/goban.js') -%]"></script>
         <script>
 $(function () {
+    var c = document.getElementById('goban');
+    c.width = $('#goban-container').width();
+    c.height = $('#goban-container').width();
+    var goban = new Goban(c, [%- IF size; size; ELSE; 19; END; -%]);
+    goban.getMoves('[%- sgf -%]');
+    goban.draw();
+    goban.setMoveAnalysisData([[%- FOREACH move = data %]
+                                [%- move.color == "Black" ? move.score : move.color == "White" ? move.score * -1 : 0 -%],
+                              [%- END %]]);
+    goban.sliceGraph();
+
+    document.getElementById('next-btn').onclick = function() {goban.nextMove()};
+    document.getElementById('prev-btn').onclick = function() {goban.prevMove()};
+    document.getElementById('start-btn').onclick = function() {goban.goToMove(0)};
+    document.getElementById('end-btn').onclick = function() {goban.goToMove(goban.moves.length)};
+
     $('#graph').highcharts({
         chart: {
             type: "spline"
@@ -58,30 +74,24 @@ $(function () {
             },
             marker: {
                 enabled: false
+            },
+            series: {
+                cursor: 'pointer',
+                point: {
+                    events: {
+                        click: function(e) {
+                            $(document.body).animate({'scrollTop': $('#gameplay').offset().top});
+                            goban.goToMove(this.x);
+                        }
+                    }
+                }
             }
         },
         series: [{
             name: 'Score',
-            data: [
-                [%- FOREACH move = data %]
-                    [%- move.color == "Black" ? move.score : move.color == "White" ? move.score * -1 : 0 -%],
-                [%- END %]
-            ]
+            data: goban.moveData
         }]
     });
-});
-        </script>
-        <script>
-$(function () {
-    var c = document.getElementById('goban');
-    c.width = $('#goban-container').width();
-    c.height = $('#goban-container').width();
-    var goban = new Goban(c, [%- IF size; size; ELSE; 19; END; -%]);
-    goban.getMoves('[%- sgf -%]');
-    goban.draw();
-
-    document.getElementById('next-btn').onclick = function() {goban.nextMove();};
-    document.getElementById('prev-btn').onclick = function() {goban.prevMove();};
 });
         </script>
     </head>
@@ -114,8 +124,7 @@ $(function () {
                     <ul class="nav nav-sidebar">
                         <li><a href="#">Overview</a></li>
                         <li><a href="#details">Details</a></li>
-                        <li><a href="#gameplay">Gameplay</a></li>
-                        <li><a href="#">Export</a></li>
+                        <li><a href="$gameplay">Gameplay</a></li>
                     </ul>
                 </div>
                 <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
@@ -145,17 +154,35 @@ $(function () {
 [%- IF event -%]            <li class="list-group-item">Event: [%- event -%]</li>                                       [%- END -%]
                         </ul>
                     </div>
-                    <div class="row well" id="gameplay">
-                        <div class="col-md-6" id="goban-container">
-                            <canvas id="goban" style="border: 1px; solid: #000000;"></canvas>
-                        </div>
-                        <div class="col-md-2">
-                            <button class="btn btn-default btn-lg" id="prev-btn">
-                                <span class="glyphicon glyphicon-chevron-left"></span>
-                            </button>
-                            <button class="btn btn-default btn-lg" id="next-btn">
-                                <span class="glyphicon glyphicon-chevron-right"></span>
-                            </button>
+                    <div id="gameplay">
+                        <h1 class="page-header">Gameplay</h1>
+                        <div class="row well">
+                            <div class="col-md-6">
+                                <div id="goban-container">
+                                    <canvas id="goban" style="border: 1px; solid: #000000;"></canvas>
+                                </div>
+                                <div id="goban-controllers">
+                                    <button class="btn btn-default btn-lg" id="start-btn">
+                                        <span class="glyphicon glyphicon-backward"></span>
+                                    </button>
+                                    <button class="btn btn-default btn-lg" id="prev-btn">
+                                        <span class="glyphicon glyphicon-chevron-left"></span>
+                                    </button>
+                                    <button class="btn btn-default btn-lg" id="next-btn">
+                                        <span class="glyphicon glyphicon-chevron-right"></span>
+                                    </button>
+                                    <button class="btn btn-default btn-lg" id="end-btn">
+                                        <span class="glyphicon glyphicon-forward"></span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div id="slice-graph">
+                                    <div class="alert alert-danger">
+                                        <p>If the graph isn't showing, check your internet connection!</p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
