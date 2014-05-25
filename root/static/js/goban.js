@@ -61,7 +61,7 @@ Goban.prototype.placeLastStoneIdentifier = function(x, y) {
 
 Goban.prototype.getMoves = function(sgf) {
     this.moves = [];
-    var regex = /;([WB])\[([a-z]{2})\]/g;
+    var regex = /;([WB])\[([a-z]?[a-z]?)\]/g;
 
     var currentgroup;
     while(currentgroup = regex.exec(sgf)) {
@@ -80,7 +80,7 @@ Goban.prototype.goToMove = function(move) {
     }
 
     for (var i = 0; i < move; i++) {
-        if(this.moves[i].move != 'tt') { //pass
+        if(this.moves[i].move != 'tt' && this.moves[i].move != '') { // not pass
             var x = 'abcdefghijklmnopqrs'.indexOf(this.moves[i].move[0]);
             var y = 'abcdefghijklmnopqrs'.indexOf(this.moves[i].move[1]);
             var color = this.moves[i].color == "B" ? 'black' : 'white';
@@ -100,9 +100,9 @@ Goban.prototype.goToMove = function(move) {
         }
     }
 
-    if(this.moves[move - 1].move == 'tt') { //pass
+    if(this.moves[move - 1].move == 'tt' || this.moves[move - 1].move == '') { //pass
         this.context.fillStyle = "#FF0000";
-        this.context.font = this.canvas.width / this.boardsize / 2 + "px Arial";
+        this.context.font = this.canvas.width / this.boardsize / 3 + "px Arial";
         this.context.textBaseline = 'top';
         this.context.fillText("Pass", 0, 0);
     } else {
