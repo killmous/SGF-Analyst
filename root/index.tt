@@ -1,16 +1,17 @@
 <!DOCTYPE html>
-<html lang="en"><head>
+<html lang="en">
+  <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="">
-    <link rel="shortcut icon" href="../../assets/ico/favicon.ico">
+    <link rel="shortcut icon" href="[%- c.uri_for('/go.ico') -%]">
 
     <title>SGF Analyst</title>
 
     <!-- Bootstrap core CSS -->
-    <link href="[% c.uri_for('/static/css/bootstrap.min.css') %]" rel="stylesheet">
+    <link href="[% c.uri_for('/static/css/bootstrap-readable.min.css') %]" rel="stylesheet">
 
     <!-- Custom styles for this template -->
     <link href="[% c.uri_for('/static/css/cover.css') %]" rel="stylesheet">
@@ -20,12 +21,42 @@
       <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
       <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
-  <style type="text/css"></style><style id="holderjs-style" type="text/css"></style></head>
+    <style type="text/css"></style><style id="holderjs-style" type="text/css"></style>
+    <script src="[%- c.uri_for('/static/js/jquery.min.js') -%]"></script>
+    <script src="[%- c.uri_for('/static/js/goban.js') -%]"></script>
+    <script>
+$(function() {
+  var c = document.getElementById('goban');
+  c.width = $(document).width();
+  c.height = $(document).width();
+  c.getContext('2d').webkitImageSmoothingEnabled = false;
+  c.getContext('2d').mozImageSmoothingEnabled = false;
+  var goban = new Goban(c, 19);
+  goban.draw();
+  //while(true) {
+    var moves = new Array(350);
+    for(var i = 0; i < moves.length; i += 2) {
+      moves[i] = ";B["
+               + "abcdefghijklmnopqrs"[Math.floor(Math.random() * 19)]
+               + "abcdefghijklmnopqrs"[Math.floor(Math.random() * 19)]
+               + "]";
+      moves[i + 1] = ";W["
+               + "abcdefghijklmnopqrs"[Math.floor(Math.random() * 19)]
+               + "abcdefghijklmnopqrs"[Math.floor(Math.random() * 19)]
+               + "]";
+    }
+    goban.getMoves(moves.join(''));
+    var timer = setInterval(function() {goban.nextMove()}, 1000);
+  //}
+});
+    </script>
+  </head>
   <body>
-    <div class="site-wrapper">
+    <canvas id="goban" style="position: fixed; top: 0; left: 0; z-index: -1;"></canvas>
+    <div class="site-wrapper" style="z-index: 1;">
       <div class="site-wrapper-inner">
         <div class="cover-container">
-          <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+          <div class="navbar navbar-default navbar-fixed-top" role="navigation">
             <div class="container">
               <div class="navbar-header">
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -38,34 +69,33 @@
               </div>
               <div class="collapse navbar-collapse">
                 <ul class="nav navbar-nav">
-                  <li class="active"><a href="[% c.uri_for('/') %]">Home</a></li>
+                  <li class="active"><a href="#">Home</a></li>
                   <li><a href="#about">About</a></li>
                   <li><a href="#contact">Contact</a></li>
                 </ul>
+                <a style="float: right; padding-top: 8px;" class="brand"><img src="[%- c.uri_for('/static/images/btn_88x31_powered.png') -%]"></a>
               </div><!--/.nav-collapse -->
             </div>
           </div>
           <div class="inner cover">
 [%- IF error -%]
-            <div class="alert alert-danger">
+            <div class="alert alert-info alert-dismissable">
+              <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
               <p>There was a problem with the SGF file you input</p>
             </div>
 [%- END -%]
-[%- IF data -%]
-            <div class="alert alert-danger">
-              <p>[%- data -%]</p>
+            <div class="well">
+              <h1 class="cover-heading">The SGF Analyst</h1>
+              <p class="lead">Input your sgf file into the box below to be directed to an analysis of that game</p>
+              <form method="POST" id="createform" action="[% c.uri_for('/build') %]">
+                <div class="input-group">
+                  <input type="text" class="form-control" name="data" />
+                  <span class="input-group-btn">
+                    <button class="btn btn-default" type="button" onclick="document.forms['createform'].submit();">Submit</button>
+                  </span>
+                </div>
+              </form>
             </div>
-[%- END -%]
-            <h1 class="cover-heading">The SGF Analyst</h1>
-            <p class="lead">Input your sgf file into the box below to be directed to an analysis of that game</p>
-            <form method="POST" id="createform" action="[% c.uri_for('/build') %]">
-              <div class="input-group">
-                <input type="text" class="form-control" name="data" />
-                <span class="input-group-btn">
-                  <button class="btn btn-default" type="button" onclick="document.forms['createform'].submit();">Submit</button>
-                </span>
-              </div>
-            </form>
           <div class="footer">
             <div class="inner">
               <p>SGF Analyst for the game of Go by <a href="https://github.com/killmous">killmous</a>.</p>
@@ -78,7 +108,6 @@
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
     <script src="[% c.uri_for('/static/js/bootstrap.min.js') %]"></script>
 
 </body></html>

@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
+<html lang="en"><head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -21,38 +20,8 @@
       <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
       <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
-    <style type="text/css"></style><style id="holderjs-style" type="text/css"></style>
-    <script src="[%- c.uri_for('/static/js/jquery.min.js') -%]"></script>
-    <script src="[%- c.uri_for('/static/js/goban.js') -%]"></script>
-    <script>
-$(function() {
-  var c = document.getElementById('goban');
-  c.width = $(document).width();
-  c.height = $(document).width();
-  c.getContext('2d').webkitImageSmoothingEnabled = false;
-  c.getContext('2d').mozImageSmoothingEnabled = false;
-  var goban = new Goban(c, 19);
-  goban.draw();
-  //while(true) {
-    var moves = new Array(350);
-    for(var i = 0; i < moves.length; i += 2) {
-      moves[i] = ";B["
-               + "abcdefghijklmnopqrs"[Math.floor(Math.random() * 19)]
-               + "abcdefghijklmnopqrs"[Math.floor(Math.random() * 19)]
-               + "]";
-      moves[i + 1] = ";W["
-               + "abcdefghijklmnopqrs"[Math.floor(Math.random() * 19)]
-               + "abcdefghijklmnopqrs"[Math.floor(Math.random() * 19)]
-               + "]";
-    }
-    goban.getMoves(moves.join(''));
-    var timer = setInterval(function() {goban.nextMove()}, 1000);
-  //}
-});
-    </script>
-  </head>
+  <style type="text/css"></style><style id="holderjs-style" type="text/css"></style></head>
   <body>
-    <canvas id="goban" style="position: fixed; top: 0; left: 0; z-index: -1;"></canvas>
     <div class="site-wrapper">
       <div class="site-wrapper-inner">
         <div class="cover-container">
@@ -77,7 +46,11 @@ $(function() {
             </div>
           </div>
           <div class="inner cover">
-            <h1 style="color: #FFF">Page not found</h1>
+            <li class="list-group">
+                [%- FOREACH entry = db %]
+                    [%-  -%]
+                [%- END %]
+            </li>
           </div>
           <div class="footer">
             <div class="inner">
@@ -91,6 +64,7 @@ $(function() {
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
+    <script src="[%- c.uri_for('/static/js/jquery.min.js') -%]"></script>
     <script src="[% c.uri_for('/static/js/bootstrap.min.js') %]"></script>
   </body>
 </html>

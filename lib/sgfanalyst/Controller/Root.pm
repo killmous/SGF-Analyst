@@ -47,7 +47,7 @@ sub build :Chained('/') :PathPart('build') {
     my ( $self, $c ) = @_;
 
     if (exists $c->request->params->{data}) {
-        my $file = $c->request->params->{data};
+        my $file = remove_variations($c->request->params->{data});
 
         my $sgf;
         eval {
@@ -119,6 +119,21 @@ sub evaluate {
     }
     print "\n";
     return \@ret;
+}
+
+=head2 remove_variations
+
+Removes comments and variations from an sgf file
+
+=cut
+
+sub remove_variations {
+    my $str = shift;
+    $str =~ s/\R//g;
+    $str =~ s/C\[.*?\]//g;
+    $str =~ s/\]\).*$/\]\)/g;
+    $str =~ s/\(;/;/g;
+    return "($str";
 }
 
 =head2 end

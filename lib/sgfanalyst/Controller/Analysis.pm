@@ -29,12 +29,18 @@ sub base :Chained('/') :PathPart('pages') :CaptureArgs(0) {
     $c->stash(db => $c->model('DB::Game'));
 }
 
+sub search :Chained('base') :PathPart('') :Args(0) {
+    my ( $self, $c ) = @_;
+
+    $c->stash(template => 'pages.tt');
+}
+
 sub analysis :Chained('base') :PathPart('') :Args(1) {
     my ( $self, $c, $id ) = @_;
 
     my $dbdata = $c->stash->{db}->find($id);
     if (!$dbdata) {
-        $c->response->body("$id not found");
+        $c->stash(template => '404.tt');
     } else {
         $c->stash(data => decode_json $dbdata->{_column_data}->{data});
         $c->stash(sgf => $dbdata->{_column_data}->{sgf});
@@ -53,8 +59,8 @@ sub analysis :Chained('base') :PathPart('') :Args(1) {
         $c->stash(date => $dbdata->{_column_data}->{date});
         $c->stash(event => $dbdata->{_column_data}->{event});
         $c->stash(winner => $dbdata->{_column_data}->{winner});
+        $c->stash(template => 'analysis.tt');
     }
-    $c->stash(template => 'analysis.tt');
 }
 
 

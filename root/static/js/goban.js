@@ -70,8 +70,8 @@ Goban.prototype.getMoves = function(sgf) {
     }
 }
 
-Goban.prototype.goToMove = function(move) {
-    this.canvas.width = this.canvas.width;
+Goban.prototype.goToMove = function(move, noslicegraph) {
+    this.canvas.width = this.canvas.width; //Clear screen
     this.draw();
     for (var i = 0; i < this.boardsize; i++) {
         for (var j = 0; j < this.boardsize; j++) {
@@ -100,33 +100,35 @@ Goban.prototype.goToMove = function(move) {
         }
     }
 
-    if(this.moves[move - 1].move == 'tt' || this.moves[move - 1].move == '') { //pass
-        this.context.fillStyle = "#FF0000";
-        this.context.font = this.canvas.width / this.boardsize / 3 + "px Arial";
-        this.context.textBaseline = 'top';
-        this.context.fillText("Pass", 0, 0);
-    } else {
-        var x = 'abcdefghijklmnopqrstuvwxyz'.indexOf(this.moves[move - 1].move[0]);
-        var y = 'abcdefghijklmnopqrstuvwxyz'.indexOf(this.moves[move - 1].move[1]);
-        this.placeLastStoneIdentifier(x, y);
+    if(move != 0) {
+        if(this.moves[move - 1].move == 'tt' || this.moves[move - 1].move == '') { //pass
+            this.context.fillStyle = "#FF0000";
+            this.context.font = this.canvas.width / this.boardsize + "px Arial";
+            this.context.textBaseline = 'top';
+            this.context.fillText("Pass", 0, 0);
+        } else {
+            var x = 'abcdefghijklmnopqrstuvwxyz'.indexOf(this.moves[move - 1].move[0]);
+            var y = 'abcdefghijklmnopqrstuvwxyz'.indexOf(this.moves[move - 1].move[1]);
+            this.placeLastStoneIdentifier(x, y);
+        }
     }
 
-    this.sliceGraph();
+    if(noslicegraph != null) this.sliceGraph();
 }
 
 Goban.prototype.nextMove = function() {
     if(this.currentMove != this.moves.length) {
         this.currentMove++;
+        this.goToMove(this.currentMove);
     }
-    this.goToMove(this.currentMove);
 }
 
 Goban.prototype.prevMove = function() {
     if(this.currentMove != 0)
     {
         this.currentMove--;
+        this.goToMove(this.currentMove);
     }
-    this.goToMove(this.currentMove);
 }
 
 Goban.prototype.capture = function(x, y) {
