@@ -7,6 +7,8 @@ use Data::Dumper;
 
 BEGIN { extends 'Catalyst::Controller' }
 
+my $currentmove;
+
 #
 # Sets the actions in this controller to be registered with no prefix
 # so they function identically to actions created in MyApp.pm
@@ -111,14 +113,22 @@ sub evaluate {
     my $nummoves = $file =~ s/;//g;
     print "Evaluating...";
     foreach my $i (1..$nummoves) {
-        my $score = `gnugo --score estimate -l $arg -L $i`;
+        my $score = `/usr/games/gnugo --score estimate -l $arg -L $i`;
         push(@ret, {
-            "color" => $score =~ m/^([A-Za-z]+)/g,
-            "score" => $score =~ m/([0-9]+\.[0-9])/g
+            color => $score =~ m/^([A-Za-z]+)/g,
+            score => $score =~ m/([0-9]+\.[0-9])/g
         });
+        $currentmove = $i;
     }
-    print "\n";
     return \@ret;
+}
+
+sub ajax_getcurrentmove :Local {
+    my ( $self, $c, @args ) = @_;
+
+    $c->res->body(encode_json {
+        move => $currentmove
+        });
 }
 
 =head2 remove_variations

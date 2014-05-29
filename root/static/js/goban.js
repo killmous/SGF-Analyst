@@ -113,21 +113,21 @@ Goban.prototype.goToMove = function(move, noslicegraph) {
         }
     }
 
-    if(noslicegraph != null) this.sliceGraph();
+    if(noslicegraph == undefined) this.sliceGraph();
 }
 
-Goban.prototype.nextMove = function() {
+Goban.prototype.nextMove = function(noslicegraph) {
     if(this.currentMove != this.moves.length) {
         this.currentMove++;
-        this.goToMove(this.currentMove);
+        this.goToMove(this.currentMove, noslicegraph);
     }
 }
 
-Goban.prototype.prevMove = function() {
+Goban.prototype.prevMove = function(noslicegraph) {
     if(this.currentMove != 0)
     {
         this.currentMove--;
-        this.goToMove(this.currentMove);
+        this.goToMove(this.currentMove, noslicegraph);
     }
 }
 

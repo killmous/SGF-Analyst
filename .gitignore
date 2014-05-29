@@ -5,4 +5,5 @@ META.yml
 MYMETA.yml
 MYMETA.json
 Makefile
+nginx.conf
 sgfanalyst.db

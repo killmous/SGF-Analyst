@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
@@ -26,6 +25,44 @@
     <script src="[%- c.uri_for('/static/js/goban.js') -%]"></script>
     <script>
 $(function() {
+  $('#submit-btn').click(function() {
+    document.forms['createform'].submit();
+
+    //#justgobanthings
+    $('#myModal').modal({
+      keyboard: false
+    });
+    var c = document.getElementById('goban-modal');
+    c.width = $('#myModal').width();
+    c.height = $('#myModal').width();
+    var goban_modal = new Goban(c, 19);
+    goban_modal.getMoves($('#sgf-input').val());
+    goban_modal.draw();
+
+    //#justajaxthings
+    function makeAjaxCall(currentmove) {
+      var move = currentmove;
+      $.ajax({
+        url: 'ajax_getcurrentmove',
+        type: 'POST',
+        dataType: 'json',
+        data: '{}',
+        contentType: 'application/json; charset=utf-8',
+        success: function(data, textStatus) {
+          if(data.move > move) {
+            move = data.move;
+            goban_modal.nextMove(1);
+          }
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown) {
+          console.log("ERROR");
+          console.log(XMLHttpRequest);
+        }
+      });
+      setTimeout(function() {makeAjaxCall(move)}, 250);
+    }
+    makeAjaxCall(0);
+  });
   var c = document.getElementById('goban');
   c.width = $(document).width();
   c.height = $(document).width();
@@ -33,26 +70,39 @@ $(function() {
   c.getContext('2d').mozImageSmoothingEnabled = false;
   var goban = new Goban(c, 19);
   goban.draw();
-  //while(true) {
-    var moves = new Array(350);
-    for(var i = 0; i < moves.length; i += 2) {
-      moves[i] = ";B["
-               + "abcdefghijklmnopqrs"[Math.floor(Math.random() * 19)]
-               + "abcdefghijklmnopqrs"[Math.floor(Math.random() * 19)]
-               + "]";
-      moves[i + 1] = ";W["
-               + "abcdefghijklmnopqrs"[Math.floor(Math.random() * 19)]
-               + "abcdefghijklmnopqrs"[Math.floor(Math.random() * 19)]
-               + "]";
-    }
-    goban.getMoves(moves.join(''));
-    var timer = setInterval(function() {goban.nextMove()}, 1000);
-  //}
+  var moves = new Array(350);
+  for(var i = 0; i < moves.length; i += 2) {
+    moves[i] = ";B["
+             + "abcdefghijklmnopqrs"[Math.floor(Math.random() * 19)]
+             + "abcdefghijklmnopqrs"[Math.floor(Math.random() * 19)]
+             + "]";
+    moves[i + 1] = ";W["
+             + "abcdefghijklmnopqrs"[Math.floor(Math.random() * 19)]
+             + "abcdefghijklmnopqrs"[Math.floor(Math.random() * 19)]
+             + "]";
+  }
+  goban.getMoves(moves.join(''));
+  setInterval(function() {goban.nextMove(1)}, 1000);
 });
     </script>
   </head>
   <body>
     <canvas id="goban" style="position: fixed; top: 0; left: 0; z-index: -1;"></canvas>
+    <!-- BEGIN MODAL -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title" id="modalLabel">Loading...</h4>
+          </div>
+          <div id="goban-modal-container" class="modal-body">
+            <canvas id="goban-modal"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- END MODAL -->
     <div class="site-wrapper" style="z-index: 1;">
       <div class="site-wrapper-inner">
         <div class="cover-container">
@@ -69,9 +119,9 @@ $(function() {
               <p class="lead">Input your sgf file into the box below to be directed to an analysis of that game</p>
               <form method="POST" id="createform" action="[% c.uri_for('/build') %]">
                 <div class="input-group">
-                  <input type="text" class="form-control" name="data" />
+                  <input id="sgf-input" type="text" class="form-control" name="data" />
                   <span class="input-group-btn">
-                    <button class="btn btn-default" type="button" onclick="document.forms['createform'].submit();">Submit</button>
+                    <button id="submit-btn" class="btn btn-default" type="button">Submit</button>
                   </span>
                 </div>
               </form>
