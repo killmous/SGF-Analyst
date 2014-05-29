@@ -29,40 +29,17 @@ $(function() {
     document.forms['createform'].submit();
 
     //#justgobanthings
-    $('#myModal').modal({
-      keyboard: false
-    });
+    $('#myModal').modal('show');
     var c = document.getElementById('goban-modal');
-    c.width = $('#myModal').width();
-    c.height = $('#myModal').width();
-    var goban_modal = new Goban(c, 19);
+    c.width = $('#goban-modal-container').width();
+    c.height = $('#goban-modal-container').width();
+    var goban_modal = new Goban(c, parseInt(/SZ\[([0-9]+)\]/.exec($('#sgf-input').val())[1]));
     goban_modal.getMoves($('#sgf-input').val());
     goban_modal.draw();
 
-    //#justajaxthings
-    function makeAjaxCall(currentmove) {
-      var move = currentmove;
-      $.ajax({
-        url: 'ajax_getcurrentmove',
-        type: 'POST',
-        dataType: 'json',
-        data: '{}',
-        contentType: 'application/json; charset=utf-8',
-        success: function(data, textStatus) {
-          if(data.move > move) {
-            move = data.move;
-            goban_modal.nextMove(1);
-          }
-        },
-        error: function(XMLHttpRequest, textStatus, errorThrown) {
-          console.log("ERROR");
-          console.log(XMLHttpRequest);
-        }
-      });
-      setTimeout(function() {makeAjaxCall(move)}, 250);
-    }
-    makeAjaxCall(0);
+    setInterval(function() {goban_modal.nextMove(1)}, 500);
   });
+
   var c = document.getElementById('goban');
   c.width = $(document).width();
   c.height = $(document).width();
@@ -89,7 +66,7 @@ $(function() {
   <body>
     <canvas id="goban" style="position: fixed; top: 0; left: 0; z-index: -1;"></canvas>
     <!-- BEGIN MODAL -->
-    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">

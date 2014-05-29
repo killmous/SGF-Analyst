@@ -45,7 +45,7 @@ Build the sgf page
 
 =cut
 
-sub build :Chained('/') :PathPart('build') {
+sub build :Local {
     my ( $self, $c ) = @_;
 
     if (exists $c->request->params->{data}) {
@@ -121,14 +121,6 @@ sub evaluate {
         $currentmove = $i;
     }
     return \@ret;
-}
-
-sub ajax_getcurrentmove :Local {
-    my ( $self, $c, @args ) = @_;
-
-    $c->res->body(encode_json {
-        move => $currentmove
-        });
 }
 
 =head2 remove_variations
